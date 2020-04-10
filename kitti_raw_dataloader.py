@@ -14,11 +14,10 @@ class KtiitRawS(Dataset):
         super(KtiitRawS, self).__init__()
         dir_path = os.path.dirname(os.path.realpath(__file__))
 
-        # TODO: if need test scenes
-        # test_scene_file = dir_path + '/test_scene_' + cfg.split + '.txt'
-        # with open(test_scene_file, 'r') as f:
-        #     test_scenes = f.readlines()
-        # self.test_scenes = [t[:-1] for t in test_scenes]
+        test_scene_file = os.path.join(dir_path, 'splits/test_scene_eigen.txt')
+        with open(test_scene_file, 'r') as f:
+            test_scenes = f.readlines()
+        self.test_scenes = [t[:-1] for t in test_scenes]
 
         self.dataset_dir = cfg.dataset_dir
         self.img_height = cfg.img_height
@@ -40,6 +39,8 @@ class KtiitRawS(Dataset):
             for dr in drive_set:
                 drive_dir = os.path.join(self.dataset_dir, 'rawdata', date, dr)
                 if os.path.isdir(drive_dir):
+                    if dr[:-5] in self.test_scenes:
+                        continue
                     for cam in self.cam_ids:
                         gt_dir = os.path.join(self.dataset_dir, self.mode, dr,
                                               'proj_depth/groundtruth/image_{}'.format(cam))
@@ -151,8 +152,6 @@ if __name__ == "__main__":
 
     print(kitti_raw.__len__())
 
-    for i in range(0, 10000):
-        sample = kitti_raw[i]
 
     print("*")
 
